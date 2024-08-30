@@ -1,18 +1,16 @@
 #include "write_text.h"
 
-//static inline uint64_t getTimeSinceBootMs(){
-//	return get_now();//*1000/(APP_TIMER_CLOCK_FREQ/(APP_TIMER_CONFIG_RTC_FREQUENCY + 1));
-//}
+static inline uint64_t getTimeSinceBootMs(){
+	return get_now()*1000/(APP_TIMER_CLOCK_FREQ/(APP_TIMER_CONFIG_RTC_FREQUENCY + 1));
+}
 
 void delayRgbUs(uint32_t us_time, uint8_t R, uint8_t G, uint8_t B){
 	uint8_t rgb[] = {R, G, B};
-//			nrf_delay_us(ms_time*1000);
-//	uint64_t start = getTimeSinceBootMs();
-//	while(((getTimeSinceBootMs() - start)) < (uint64_t)ms_time){
-	for(uint32_t t = 0; t < us_time; t+=3){
+	us_time = us_time*25600/78000;
+	for(uint32_t t = 0; t < us_time; t++){
 		for(uint8_t color = 0; color < 3; color++){
 			nrf_gpio_pin_write(RGB_PINS[color], rgb[color] > ((t*us_time) % 256));
-			nrf_delay_us(1);
+//			nrf_delay_us(1);
 			nrf_gpio_pin_write(RGB_PINS[color], 0);
 		}
 	}
