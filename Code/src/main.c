@@ -32,9 +32,15 @@ static void lfclk_config(void){
 }
 
 void draw_emoji(){
-	for(uint8_t col = 0; col < 17; col++){
-		coloredLedsTest(smileSunGlass[col]);
-		nrf_delay_ms(1);
+	uint8_t whiteBg[3] = {255, 235, 212};
+	for(uint8_t col = 0; col < 32; col++){
+		uint8_t temp[LED_COUNT][3];
+//		from16toFullSize(smileSunGlass[col], temp, 44-16); 
+//		double16array(emojiSunGlass16[col/2], temp, (44-32)/2, whiteBg); 
+//		from32toFullSize(emojiSunGlass32[col], temp, (44-32)/2, whiteBg); 
+		from32toFullSize(imgSuperMario32[col], temp, (44-32)/2, whiteBg); 
+		printColoredLine(temp);
+		nrf_delay_us(1200);
 	}
 }
 
@@ -45,7 +51,7 @@ int main(void){
     lfclk_config();
     log_init();
     leds_init();
-//	leds_test();
+	simple_leds_test();
     NRF_LOG_INFO("Start");	NRF_LOG_PROCESS();
     timers_init();
 									
@@ -62,9 +68,9 @@ int main(void){
 	
 	
 	uint8_t rainbow[3][LED_COUNT] = {	
-		{255, 255, 148, 148, 75, 75, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255},	//RED
-		{255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 127, 127, 0, 0, 255, 255},			//GREEN
-		{255, 255, 211, 211, 130, 130, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255}			//BLUE
+		{255, 148,  148, 148,  148, 148,  148, 75,  75,  75,  75,  75,  75,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255},	//RED
+		{255, 0,    0,   0,    0,   0,    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 127, 127, 127, 127, 127, 127, 0,   0,   0,   0,   0,   0,   255},	//GREEN
+		{255, 211,  211, 211,  211, 211,  211, 130, 130, 130, 130, 130, 130, 255, 255, 255, 255, 255, 255, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255}	    //BLUE
 	};
 	convertTrueRGB(rainbow);
 									
@@ -79,7 +85,7 @@ int main(void){
 //		writeWordFont(test, 3, 7, 100, 10, true, false, 83, 230, 183);
 //		writeWordFont(&test[3], 4, 7, 100, 7, true, false, 0, 255, 0);
 		
-		NRF_LOG_PROCESS();
+//		NRF_LOG_PROCESS();
 		nrf_delay_ms(10);
 //        idle_state_handle();
     }
