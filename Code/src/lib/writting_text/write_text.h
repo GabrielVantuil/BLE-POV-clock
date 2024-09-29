@@ -24,7 +24,7 @@ void leds_test(void);
 void simple_leds_test(void);
 void convertTrueRGB(uint8_t RGB[3][LED_COUNT]);
 void coloredLedsTest(uint8_t RGB[3][LED_COUNT]);
-void printColoredLine(uint8_t line[LED_COUNT][3]);
+void printColoredLine(uint8_t line[LED_COUNT][3], bool inv);
 bool from16toFullSize(uint8_t oldArray[16][3], uint8_t newArray[LED_COUNT][3], uint8_t offset, uint8_t bgColor[3]);
 bool from32toFullSize(uint8_t oldArray[32][3], uint8_t newArray[LED_COUNT][3], uint8_t offset, uint8_t bgColor[3]);
 bool double16array(uint8_t oldArray[16][3], uint8_t newArray[LED_COUNT][3], uint8_t offset, uint8_t bgColor[3]);

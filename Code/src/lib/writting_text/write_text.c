@@ -103,12 +103,13 @@ void coloredLedsTest(uint8_t RGB[3][LED_COUNT]){
 	}
 }
 
-void printColoredLine(uint8_t line[LED_COUNT][3]){
+void printColoredLine(uint8_t line[LED_COUNT][3], bool inv){
 	for(uint8_t color = 0; color < 3; color++){
 		for(uint8_t m = 0; m < 2; m++){
 			nrf_gpio_pin_write(RGB_PINS[m][color], 1);
 			for(uint16_t intensity = 0; intensity < 256; intensity+=25){
-				for(uint8_t led = 0; led < LED_SIGNALS_COUNT; led++)	nrf_gpio_pin_write(LED_PIN[led], (line[led + LED_SIGNALS_COUNT*m][color] > intensity));
+				if(inv) for(uint8_t led = 0; led < LED_SIGNALS_COUNT; led++)	nrf_gpio_pin_write(LED_PIN[led], (line[LED_COUNT - (led + LED_SIGNALS_COUNT*m)][color] > intensity));
+				else 	for(uint8_t led = 0; led < LED_SIGNALS_COUNT; led++)	nrf_gpio_pin_write(LED_PIN[led], (line[led + LED_SIGNALS_COUNT*m][color] > intensity));
 			}
 			nrf_gpio_pin_write(RGB_PINS[m][color], 0);
 			for(uint8_t led = 0; led < LED_SIGNALS_COUNT; led++)	nrf_gpio_pin_write(LED_PIN[led], 0);

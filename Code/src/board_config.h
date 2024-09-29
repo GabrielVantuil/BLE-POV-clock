@@ -11,6 +11,7 @@
 #define RED_FET2	22
 #define GREEN_FET2  23
 #define BLUE_FET2   24
+#define SENSOR_PIN  28
 
 #define LED_SIGNALS_COUNT  	22
 

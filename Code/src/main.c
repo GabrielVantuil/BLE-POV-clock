@@ -16,6 +16,8 @@
 #include "Battery_level.h"
 #include "write_text.h"
 #include "images.h"
+uint8_t mode = 0;
+#define TOTAL_MODES 3
 
 static void log_init(void){
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
@@ -31,15 +33,14 @@ static void lfclk_config(void){
   nrf_drv_clock_lfclk_request(NULL);
 }
 
-void draw_emoji(){
+void draw_image(uint8_t image[][32][3], bool inv){
 	uint8_t whiteBg[3] = {255, 235, 212};
 	for(uint8_t col = 0; col < 32; col++){
 		uint8_t temp[LED_COUNT][3];
 //		from16toFullSize(smileSunGlass[col], temp, 44-16); 
 //		double16array(emojiSunGlass16[col/2], temp, (44-32)/2, whiteBg); 
-//		from32toFullSize(emojiSunGlass32[col], temp, (44-32)/2, whiteBg); 
-		from32toFullSize(imgSuperMario32[col], temp, (44-32)/2, whiteBg); 
-		printColoredLine(temp);
+		from32toFullSize(image[col], temp, (44-32)/2, whiteBg); 
+		printColoredLine(temp, inv);
 		nrf_delay_us(1200);
 	}
 }
@@ -53,8 +54,7 @@ int main(void){
     leds_init();
 	simple_leds_test();
     NRF_LOG_INFO("Start");	NRF_LOG_PROCESS();
-    timers_init();
-									
+    timers_init();		
 //    APP_ERROR_CHECK(nrf_pwr_mgmt_init());
 //    ble_stack_init();
 //    gap_params_init();
@@ -65,6 +65,7 @@ int main(void){
 //    calcBatteryLevel(NULL);
 //	
 //    advertising_start();
+	nrf_gpio_cfg_input(SENSOR_PIN, NRF_GPIO_PIN_PULLUP);
 	
 	
 	uint8_t rainbow[3][LED_COUNT] = {	
@@ -76,9 +77,26 @@ int main(void){
 									
 	char test[] = "GABRIEL";
 	#define ALFABET (char*)"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    // Enter main loop.
+    bool button_latch = false;
+	
     for (;;){
-		draw_emoji();
+		if(!nrf_gpio_pin_read(SENSOR_PIN) && !button_latch){
+			mode = (mode + 1) % TOTAL_MODES;
+			button_latch = true;
+		}
+		if(nrf_gpio_pin_read(SENSOR_PIN)) button_latch = false;
+		switch(mode){
+			case 0:
+				draw_image(emojiSunGlass32, false);
+				break;
+			case 1:
+				draw_image(imgSuperMario32, false);
+				break;
+			case 2:
+				draw_image(emojiSunGlass32, true);
+				break;
+			
+		}
 //		coloredLedsTest(rainbow);
 //		writeWordFont(ALFABET, 26, 16, 500, 1, true, false, 255, 235, 212);
 //		writeWordFont(test, sizeof(test)-1, 16, 500, 1, true, false, 255, 235, 212);
