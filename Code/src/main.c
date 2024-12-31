@@ -16,8 +16,15 @@
 #include "Battery_level.h"
 #include "write_text.h"
 #include "images.h"
+
+
 uint8_t mode = 0;
-#define TOTAL_MODES 3
+uint8_t genericLedsSetup[LED_COUNT][3];	
+char text[] = "GABRIEL";
+uint8_t textLenght = 7;
+uint8_t r = 255, g = 235,  b = 212;
+
+#define TOTAL_MODES 4
 
 static void log_init(void){
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
@@ -55,16 +62,16 @@ int main(void){
 	simple_leds_test();
     NRF_LOG_INFO("Start");	NRF_LOG_PROCESS();
     timers_init();		
-//    APP_ERROR_CHECK(nrf_pwr_mgmt_init());
-//    ble_stack_init();
-//    gap_params_init();
-//    gatt_init();
-//    services_init();
-//    advertising_init();
-//    conn_params_init();
+    APP_ERROR_CHECK(nrf_pwr_mgmt_init());
+    ble_stack_init();
+    gap_params_init();
+    gatt_init();
+    services_init();
+    advertising_init();
+    conn_params_init();
 //    calcBatteryLevel(NULL);
 //	
-//    advertising_start();
+    advertising_start();
 	nrf_gpio_cfg_input(SENSOR_PIN, NRF_GPIO_PIN_PULLUP);
 	
 	
@@ -74,28 +81,32 @@ int main(void){
 		{255, 211,  211, 211,  211, 211,  211, 130, 130, 130, 130, 130, 130, 255, 255, 255, 255, 255, 255, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255}	    //BLUE
 	};
 	convertTrueRGB(rainbow);
-									
-	char test[] = "GABRIEL";
+								
 	#define ALFABET (char*)"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     bool button_latch = false;
 	
     for (;;){
 		if(!nrf_gpio_pin_read(SENSOR_PIN) && !button_latch){
-			mode = (mode + 1) % TOTAL_MODES;
+			mode = (256 - TOTAL_MODES) + (mode - 256 + TOTAL_MODES+ 1) % TOTAL_MODES;
 			button_latch = true;
 		}
 		if(nrf_gpio_pin_read(SENSOR_PIN)) button_latch = false;
 		switch(mode){
 			case 0:
-				draw_image(emojiSunGlass32, false);
+				writeWordFont(text, textLenght, 16, 100, 0, false, true, r, g, b);//255, 235, 212
 				break;
 			case 1:
+				printColoredLine(genericLedsSetup, false);
+				break;
+			case 253:
+				draw_image(emojiSunGlass32, false);
+				break;
+			case 254:
 				draw_image(imgSuperMario32, false);
 				break;
-			case 2:
+			case 255:
 				draw_image(emojiSunGlass32, true);
 				break;
-			
 		}
 //		coloredLedsTest(rainbow);
 //		writeWordFont(ALFABET, 26, 16, 500, 1, true, false, 255, 235, 212);
@@ -104,7 +115,7 @@ int main(void){
 //		writeWordFont(&test[3], 4, 7, 100, 7, true, false, 0, 255, 0);
 		
 //		NRF_LOG_PROCESS();
-		nrf_delay_ms(10);
+//		nrf_delay_ms(10);
 //        idle_state_handle();
     }
 }

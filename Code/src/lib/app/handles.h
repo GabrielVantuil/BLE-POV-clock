@@ -1,7 +1,7 @@
 #ifndef HANDLERS_H__
 #define HANDLERS_H__
 #include "nrf_drv_gpiote.h"
-#include "ble_torch_s.h"
+#include "ble_pov_display_s.h"
 #include "parameters.h"
 #include "app_timer.h"
 #include "nrf_pwr_mgmt.h"
@@ -17,9 +17,9 @@ void blinkLed(uint8_t led);
 
 void setLedOff(void * p_context);
 
-void lock_handler           (uint16_t conn_handle, ble_torch_s_t * p_torch_s, uint8_t lock);
-void led_power_handler      (uint16_t conn_handle, ble_torch_s_t * p_torch_s, const uint8_t *params);
-void led_pwm_handler       	(uint16_t conn_handle, ble_torch_s_t * p_torch_s, const uint8_t *params);
+void mode_handler           (uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, uint8_t mode);
+void set_text_handler   	(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len);
+void set_leds_handler    	(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len);
 
 void blinkLedHandler(void * p_context);
 

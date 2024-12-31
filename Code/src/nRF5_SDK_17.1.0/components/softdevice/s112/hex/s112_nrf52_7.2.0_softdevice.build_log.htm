@@ -15,24 +15,79 @@ Assembler:       Armasm.exe V5.06 update 7 (build 960)
 Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
 Library Manager: ArmAr.exe V5.06 update 7 (build 960)
 Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
-CPU DLL:         
-Dialog DLL:      
+CPU DLL:         SARMCM3.DLL V5.38.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
 Target DLL:      Segger\JL2CM3.dll V2.99.42.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-C:\Users\gabri\Meu Drive\Pessoal\Projetos\00_NRF528XX\custom\nRF5_SDK_17.1.0_ddde560\examples\#custom\#ble_flashlight\pca10040e\s112\arm5_no_packs\ble_flashlight.uvprojx
-Project File Date:  05/09/2024
+C:\Users\gabri\Documents\#git_projects\BLE-POV-clock\Code\ble_pov_clock.uvprojx
+Project File Date:  12/30/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target 'flash_s112_nrf52_7.2.0_softdevice'
-Before Build - User command #1: attrib +R ..\..\..\..\..\..\components\softdevice\s112\hex\\*
+Before Build - User command #1: attrib +R src\nRF5_SDK_17.1.0\components\softdevice\s112\hex\\*
+compiling handles.c...
+src\lib\app\handles.h(3): error:  #5: cannot open source input file "nrf_drv_gpiote.h": No such file or directory
+  #include "nrf_drv_gpiote.h"
+src\lib\app\handles.c: 0 warnings, 1 error
 compiling main.c...
-..\..\..\main.c(48): error:  #5: cannot open source input file "nordic_common.h": No such file or directory
+"no source": Error:  #219: error while deleting file "src\nrf5_sdk_17.1.0\components\softdevice\s112\hex\main.d": Permission denied
+src\main.c: 0 warnings, 1 error
+compiling write_text.c...
+src\lib\writting_text\write_text.h(4): error:  #5: cannot open source input file "board_config.h": No such file or directory
+  #include "board_config.h"
+src\lib\writting_text\write_text.c: 0 warnings, 1 error
+compiling nrfx_twim.c...
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_twim.c(41): error:  #5: cannot open source input file "nrfx.h": No such file or directory
+  #include <nrfx.h>
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_twim.c: 0 warnings, 1 error
+compiling app_ble.c...
+src\lib\app\app_ble.h(4): error:  #5: cannot open source input file "nordic_common.h": No such file or directory
   #include "nordic_common.h"
-..\..\..\main.c: 0 warnings, 1 error
-"..\..\..\..\..\..\components\softdevice\s112\hex\s112_nrf52_7.2.0_softdevice.hex" - 1 Error(s), 0 Warning(s).
+src\lib\app\app_ble.c: 0 warnings, 1 error
+compiling Battery_level.c...
+src\lib\Battery_level\Battery_level.h(4): error:  #5: cannot open source input file "nrf_drv_saadc.h": No such file or directory
+  #include "nrf_drv_saadc.h"
+src\lib\Battery_level\Battery_level.c: 0 warnings, 1 error
+compiling nrfx_adc.c...
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_adc.c(41): error:  #5: cannot open source input file "nrfx.h": No such file or directory
+  #include <nrfx.h>
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_adc.c: 0 warnings, 1 error
+compiling ble_pov_display_s.c...
+src\lib\ble_pov_display_s.c(1): error:  #5: cannot open source input file "sdk_common.h": No such file or directory
+  #include "sdk_common.h"
+src\lib\ble_pov_display_s.c: 0 warnings, 1 error
+compiling nrf_drv_twi.c...
+src\nRF5_SDK_17.1.0\integration\nrfx\legacy\nrf_drv_twi.h(44): error:  #5: cannot open source input file "nrfx.h": No such file or directory
+  #include <nrfx.h>
+src\nRF5_SDK_17.1.0\integration\nrfx\legacy\nrf_drv_twi.c: 0 warnings, 1 error
+compiling nrfx_twi.c...
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_twi.c(41): error:  #5: cannot open source input file "nrfx.h": No such file or directory
+  #include <nrfx.h>
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_twi.c: 0 warnings, 1 error
+compiling nrfx_saadc.c...
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_saadc.c(40): error:  #5: cannot open source input file "nrfx.h": No such file or directory
+  #include <nrfx.h>
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_saadc.c: 0 warnings, 1 error
+compiling nrf_drv_ppi.c...
+src\nRF5_SDK_17.1.0\integration\nrfx\legacy\nrf_drv_ppi.h(44): error:  #5: cannot open source input file "nrfx_ppi.h": No such file or directory
+  #include <nrfx_ppi.h>
+src\nRF5_SDK_17.1.0\integration\nrfx\legacy\nrf_drv_ppi.c: 0 warnings, 1 error
+compiling nrfx_ppi.c...
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_ppi.c(41): error:  #5: cannot open source input file "nrfx.h": No such file or directory
+  #include <nrfx.h>
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_ppi.c: 0 warnings, 1 error
+compiling nrfx_timer.c...
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_timer.c(41): error:  #5: cannot open source input file "nrfx.h": No such file or directory
+  #include <nrfx.h>
+src\nRF5_SDK_17.1.0\modules\nrfx\drivers\src\nrfx_timer.c: 0 warnings, 1 error
+compiling app_pwm.c...
+src\nRF5_SDK_17.1.0\components\libraries\pwm\app_pwm.c(40): error:  #5: cannot open source input file "sdk_common.h": No such file or directory
+  #include "sdk_common.h"
+src\nRF5_SDK_17.1.0\components\libraries\pwm\app_pwm.c: 0 warnings, 1 error
+"src\nRF5_SDK_17.1.0\components\softdevice\s112\hex\s112_nrf52_7.2.0_softdevice.hex" - 15 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,12 +106,12 @@ Package Vendor: NordicSemiconductor
    * Component: ARM::CMSIS:CORE:5.6.0
 
    * Component: NordicSemiconductor::Device:Startup:8.44.1
-      Source file:   Device/Source/arm/arm_startup_nrf52810.s
-      Include file:  Device/Include/system_nrf.h
-      Include file:  Device/Include/system_nrf52810.h
       Source file:   Device/Source/system_nrf52.c
+      Include file:  Device/Include/system_nrf52805.h
+      Include file:  Device/Include/system_nrf.h
+      Source file:   Device/Source/arm/arm_startup_nrf52805.s
 Target not created.
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

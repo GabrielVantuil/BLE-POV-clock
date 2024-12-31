@@ -1,58 +1,47 @@
 #include "handles.h"
 #include "utils.h"
+#include "write_text.h"
 
-#include "app_pwm.h"
+//#include "app_pwm.h"
 
-APP_PWM_INSTANCE(PWM1,1);
-bool ledPowerLocked;
+extern uint8_t mode;
+extern uint8_t genericLedsSetup[LED_COUNT][3];
+extern char text[];
+extern uint8_t textLenght;
+extern uint8_t r,g,b;
 
 void timers_init(void){
     // Initialize timer module, making it use the scheduler
     APP_ERROR_CHECK(app_timer_init());
-	APP_ERROR_CHECK(app_timer_create(&power_off_led_timer_id, APP_TIMER_MODE_SINGLE_SHOT, setLedOff));
+}
+void mode_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, uint8_t m){
+	mode = m;
 }
 
-void setLed(bool val){
-//	app_pwm_uninit(&PWM1);
-//	nrf_gpio_cfg_output(LED_CTRL_PIN);
-//    nrf_gpio_pin_write(LED_CTRL_PIN, val);
-}
-
-void setLedOff(void * p_context){
-	if(ledPowerLocked) return;
-	setLed(LED_OFF);
-}
-void pwm_ready_callback(uint32_t pwm_id){}
-void setLedPwm(uint32_t freqX1000, uint16_t duty){	
-//	app_pwm_uninit(&PWM1);
-//    app_pwm_config_t pwm1_cfg = APP_PWM_DEFAULT_CONFIG_1CH(1000000000/freqX1000, LED_CTRL_PIN);
-//    APP_ERROR_CHECK(app_pwm_init(&PWM1, &pwm1_cfg, pwm_ready_callback));
-//    app_pwm_enable(&PWM1);
-//	while (app_pwm_channel_duty_set(&PWM1, 0, duty) == NRF_ERROR_BUSY);
-}
-
-void lock_handler           (uint16_t conn_handle, ble_torch_s_t * p_torch_s, uint8_t lock){
-	ledPowerLocked = lock;
-}
-
-void led_power_handler      (uint16_t conn_handle, ble_torch_s_t * p_torch_s, const uint8_t *params){
-	if(ledPowerLocked) return;
-	APP_ERROR_CHECK(app_timer_stop(power_off_led_timer_id));
-    setLed(params[0]?LED_ON : LED_OFF);
-	uint32_t timeout;
-	ArrayToInt32(params, 1, timeout);
-	if(timeout)	APP_ERROR_CHECK(app_timer_start(power_off_led_timer_id, APP_TIMER_TICKS(timeout), NULL));
+void set_text_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
+	mode = 0;
+	r = params[0];
+	g = params[1];
+	b = params[2];
+	textLenght = len-3;
+	memcpy(text, &params[3], textLenght);
 }
 
 
-void led_pwm_handler       	(uint16_t conn_handle, ble_torch_s_t * p_torch_s, const uint8_t *params){
-	if(ledPowerLocked) return;
-	uint32_t freq, duty, timeout;
-	ArrayToInt32(params, 0, freq);
-	duty = (params[4]<<8) + params[5];
-	ArrayToInt32(params, 6, timeout);
-	if(timeout)	APP_ERROR_CHECK(app_timer_start(power_off_led_timer_id, APP_TIMER_TICKS(timeout), NULL));
-	setLedPwm(freq, duty);
+void set_leds_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
+	NRF_LOG_INFO("len: %d", len);
+	mode = 1;
+	if((len/3) > LED_COUNT) len = LED_COUNT*3;
+	for(uint8_t i = 0; i < LED_COUNT; i++){
+		genericLedsSetup[i][0] = 0;	
+		genericLedsSetup[i][1] = 0;	
+		genericLedsSetup[i][2] = 0;
+	}
+	for(uint8_t i = 0; i < (len/3); i++){
+		genericLedsSetup[i][0] = params[i*3+0];
+		genericLedsSetup[i][1] = params[i*3+1];
+		genericLedsSetup[i][2] = params[i*3+2];
+	}
 }
 void connectionTimeout(void * p_context){
 	sd_ble_gap_disconnect(m_conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);

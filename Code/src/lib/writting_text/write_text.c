@@ -17,21 +17,36 @@ void delayRgbUs(uint32_t us_time, uint8_t R, uint8_t G, uint8_t B){
 }
 void writeFont(char character, uint8_t font, uint32_t pixelLengthUs, uint8_t offset, bool flip, bool ccw, uint8_t R, uint8_t G, uint8_t B) {
 	for (int col = 0; col < font; col++) {
+		uint8_t temp[LED_COUNT][3];
+		memset(temp, 0, LED_COUNT*3);
 		for (uint8_t row = 0; row < font; row++){
-			if(font==7)		nrf_gpio_pin_write(LED_PIN[row + offset], (char7[(int)character - 64][flip?(6 - row):row]>>(ccw?col:(6-col))) & 1);
-			if(font==16)	nrf_gpio_pin_write(LED_PIN[row + offset], (char16[(int)character - 64][flip?(15 - row):row]>>(ccw?col:(15-col))) & 1);
+			if(font==7 && ((char7[(int)character - 64][flip?(6 - row):row]>>(ccw?col:(6-col))) & 1)) {
+				temp[row + offset][0] = R;
+				temp[row + offset][1] = G;
+				temp[row + offset][2] = B;
+			}
+			if(font==16 && ((char16[(int)character - 64][flip?(15 - row):row]>>(ccw?col:(15-col))) & 1)){
+				temp[row + offset][0] = R;
+				temp[row + offset][1] = G;
+				temp[row + offset][2] = B;
+			}
 		}
-		delayRgbUs(pixelLengthUs, R, G, B);
-		for (uint8_t row = 0; row < font; row++)	nrf_gpio_pin_write(LED_PIN[row + offset], 0);
-		delayRgbUs(pixelLengthUs/2, R, G, B);
+		printColoredLine(temp, false);
+		
+		nrf_delay_us(pixelLengthUs);
+//		delayRgbUs(pixelLengthUs, R, G, B);
+//		for (uint8_t row = 0; row < font; row++)	nrf_gpio_pin_write(LED_PIN[row + offset], 0);
+//		delayRgbUs(pixelLengthUs/2, R, G, B);
 	}
+	
+	
 }
 void writeWordFont(char* word, uint8_t wordLen, uint8_t font, uint32_t pixelLengthUs, uint8_t offset, bool flip, bool ccw, uint8_t R, uint8_t G, uint8_t B){
-  for(int i = 0; i < wordLen; i++){
-    char toWrite = word[ccw?(wordLen-1-i) : i];
-    if(toWrite == 32)	writeFont(64, font, pixelLengthUs, offset, flip, ccw, R, G, B);
-    else	writeFont(toWrite, font, pixelLengthUs, offset, flip, ccw, R, G, B);
-  }
+	for(int i = 0; i < wordLen; i++){
+		char toWrite = word[ccw?(wordLen-1-i) : i];
+		if(toWrite == 32)	writeFont(64, font, pixelLengthUs, offset, !flip, ccw, R, G, B);
+		else	writeFont(toWrite, font, pixelLengthUs, offset, !flip, ccw, R, G, B);
+	}
 }
 
 void leds_init(void){

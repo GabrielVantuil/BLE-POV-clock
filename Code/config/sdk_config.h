@@ -484,10 +484,10 @@
 
 // </e>
 
-// <q> BLE_TORCH_S_ENABLED  - ble_torch_s - torch Service
+// <q> BLE_POV_DISPLAY_S_ENABLED
  
-#ifndef BLE_TORCH_S_ENABLED
-#define BLE_TORCH_S_ENABLED 1
+#ifndef BLE_POV_DISPLAY_S_ENABLED
+#define BLE_POV_DISPLAY_S_ENABLED 1
 #endif
 
 // <e> BLE_NUS_CONFIG_LOG_ENABLED - Enables logging in the module.
@@ -9983,7 +9983,7 @@
 // <i> Requested BLE GAP data length to be negotiated.
 
 #ifndef NRF_SDH_BLE_GAP_DATA_LENGTH
-#define NRF_SDH_BLE_GAP_DATA_LENGTH 27
+#define NRF_SDH_BLE_GAP_DATA_LENGTH 27//original: 27
 #endif
 
 // <o> NRF_SDH_BLE_PERIPHERAL_LINK_COUNT - Maximum number of peripheral links. 
@@ -10012,12 +10012,12 @@
 
 // <o> NRF_SDH_BLE_GATT_MAX_MTU_SIZE - Static maximum MTU size. 
 #ifndef NRF_SDH_BLE_GATT_MAX_MTU_SIZE
-#define NRF_SDH_BLE_GATT_MAX_MTU_SIZE 23
+#define NRF_SDH_BLE_GATT_MAX_MTU_SIZE 23 //original: 23
 #endif
 
 // <o> NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE - Attribute Table size in bytes. The size must be a multiple of 4. 
 #ifndef NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE
-#define NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE 1408
+#define NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE  1408//original: 1408
 #endif
 
 // <o> NRF_SDH_BLE_VS_UUID_COUNT - The number of vendor-specific UUIDs. 
@@ -10439,11 +10439,10 @@
 #define PM_BLE_OBSERVER_PRIO 1
 #endif
 
-// <o> NRF_BLE_TORCH_OBSERVER_PRIO
-#ifndef NRF_BLE_TORCH_OBSERVER_PRIO
-#define NRF_BLE_TORCH_OBSERVER_PRIO 1
+// <o> NRF_BLE_POV_DISPLAY_OBSERVER_PRIO
+#ifndef NRF_BLE_POV_DISPLAY_OBSERVER_PRIO
+#define NRF_BLE_POV_DISPLAY_OBSERVER_PRIO 1
 #endif
-
 // </h> 
 //==========================================================
 

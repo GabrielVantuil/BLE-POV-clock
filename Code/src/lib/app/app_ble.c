@@ -66,7 +66,7 @@ void advertising_init(){
     ble_advdata_t advdata;
     ble_advdata_t srdata;
 
-    ble_uuid_t adv_uuids[] = {{TORCH_S_UUID_SERVICE, m_torch_s.uuid_type}};
+    ble_uuid_t adv_uuids[] = {{POV_DISPLAY_S_UUID_SERVICE, m_pov_display_s.uuid_type}};
 
     // Build and set advertising data.
     memset(&advdata, 0, sizeof(advdata));
@@ -116,7 +116,7 @@ void nrf_qwr_error_handler(uint32_t nrf_error){
  */
 void services_init(void){
     ret_code_t         err_code;
-    ble_torch_s_init_t init     = {0};
+    ble_pov_display_s_init_t init     = {0};
     nrf_ble_qwr_init_t qwr_init = {0};
 
     // Initialize Queued Write Module.
@@ -126,11 +126,11 @@ void services_init(void){
     APP_ERROR_CHECK(err_code);
 
     // Initialize torch service.
-    init.lock_handler =             lock_handler;
-    init.led_power_handler =        led_power_handler;
-    init.led_pwm_handler =          led_pwm_handler;
+    init.mode_handler =     	mode_handler;
+    init.set_text_handler = 	set_text_handler;
+    init.set_leds_handler =  	set_leds_handler;
 	
-    err_code = ble_torch_s_init(&m_torch_s, &init);
+    err_code = ble_pov_display_s_init(&m_pov_display_s, &init);
     APP_ERROR_CHECK(err_code);
 }
 
