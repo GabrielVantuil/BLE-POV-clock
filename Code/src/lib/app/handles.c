@@ -14,6 +14,14 @@ void timers_init(void){
     // Initialize timer module, making it use the scheduler
     APP_ERROR_CHECK(app_timer_init());
 }
+void set_params_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
+	nrf_gpio_cfg_output(MOTOR_PIN);
+	uint16_t RPM = ((params[0]<<8) + params[1]);
+	nrf_gpio_pin_write(MOTOR_PIN, RPM > 0);
+	NRF_LOG_INFO("RPM: %d", RPM);
+    NRF_LOG_FLUSH();
+}
+
 void mode_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, uint8_t m){
 	mode = m;
 }
@@ -26,7 +34,6 @@ void set_text_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_
 	textLenght = len-3;
 	memcpy(text, &params[3], textLenght);
 }
-
 
 void set_leds_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
 	NRF_LOG_INFO("len: %d", len);

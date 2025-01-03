@@ -4,6 +4,8 @@
 
 #define LED_ON	1
 #define LED_OFF	0
+#define MOTOR_ON	1
+#define MOTOR_OFF	0
 
 #define RED_FET1	25
 #define GREEN_FET1  26
@@ -12,6 +14,7 @@
 #define GREEN_FET2  23
 #define BLUE_FET2   24
 #define SENSOR_PIN  28
+#define MOTOR_PIN   29
 
 #define LED_SIGNALS_COUNT  	22
 

@@ -9,7 +9,11 @@
 void on_write(ble_pov_display_s_t * p_pov_display_s, ble_evt_t const * p_ble_evt){
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
-	if((p_evt_write->handle == p_pov_display_s->mode_handles.value_handle)           	&& (p_pov_display_s->mode_handler != NULL)){
+    if ((p_evt_write->handle == p_pov_display_s->set_params_handles.value_handle)       && (p_pov_display_s->set_params_handler != NULL)){
+		NRF_LOG_INFO("set_params_handler");
+        p_pov_display_s->set_params_handler(p_ble_evt->evt.gap_evt.conn_handle, p_pov_display_s, p_evt_write->data, p_evt_write->len);
+    }
+	else if((p_evt_write->handle == p_pov_display_s->mode_handles.value_handle)         && (p_pov_display_s->mode_handler != NULL)){
 		NRF_LOG_INFO("mode_handler");
         p_pov_display_s->mode_handler(p_ble_evt->evt.gap_evt.conn_handle, p_pov_display_s, p_evt_write->data[0]);
     }
@@ -60,6 +64,7 @@ uint32_t ble_pov_display_s_init(ble_pov_display_s_t * p_pov_display_s, const ble
     ble_uuid_t            ble_uuid;
 
     // Initialize service structure.
+	p_pov_display_s->set_params_handler     = p_pov_display_s_init->set_params_handler;
     p_pov_display_s->mode_handler           = p_pov_display_s_init->mode_handler;
 	p_pov_display_s->set_text_handler       = p_pov_display_s_init->set_text_handler;
 	p_pov_display_s->set_leds_handler       = p_pov_display_s_init->set_leds_handler;
@@ -74,6 +79,11 @@ uint32_t ble_pov_display_s_init(ble_pov_display_s_t * p_pov_display_s, const ble
 
     err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &p_pov_display_s->service_handle);
     VERIFY_SUCCESS(err_code); 
+    err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_SET_PARAMS_CHAR     , 2, 1, &p_pov_display_s->set_params_handles);
+    if (err_code != NRF_SUCCESS)	return err_code;
+
+    err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_GET_INFO_CHAR       , 1, 0, &p_pov_display_s->get_info_handles);
+    if (err_code != NRF_SUCCESS)	return err_code;
 		
     err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_MODE_CHAR           , 1, 1, &p_pov_display_s->mode_handles);
     if (err_code != NRF_SUCCESS)	return err_code;
@@ -82,9 +92,6 @@ uint32_t ble_pov_display_s_init(ble_pov_display_s_t * p_pov_display_s, const ble
     if (err_code != NRF_SUCCESS)	return err_code;
 
     err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_SET_LEDS_CHAR       , 3*LED_COUNT, 1, &p_pov_display_s->set_leds_handles);
-    if (err_code != NRF_SUCCESS)	return err_code;
-
-    err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_GET_LED_AMOUNT_CHAR , 1, 0, &p_pov_display_s->get_led_amount_handles);
     if (err_code != NRF_SUCCESS)	return err_code;
 	
     return err_code;

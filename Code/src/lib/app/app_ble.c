@@ -125,7 +125,8 @@ void services_init(void){
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
 
-    // Initialize torch service.
+    // Initialize service.
+    init.set_params_handler =   set_params_handler;
     init.mode_handler =     	mode_handler;
     init.set_text_handler = 	set_text_handler;
     init.set_leds_handler =  	set_leds_handler;

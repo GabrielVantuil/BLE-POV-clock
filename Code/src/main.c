@@ -93,7 +93,7 @@ int main(void){
 		if(nrf_gpio_pin_read(SENSOR_PIN)) button_latch = false;
 		switch(mode){
 			case 0:
-				writeWordFont(text, textLenght, 16, 100, 0, false, true, r, g, b);//255, 235, 212
+				writeWordFont(text, textLenght, 16, 1, LED_COUNT-16, false, true, r, g, b);//255, 235, 212
 				break;
 			case 1:
 				printColoredLine(genericLedsSetup, false);

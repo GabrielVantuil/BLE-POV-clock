@@ -1,8 +1,8 @@
 #include "write_text.h"
 
-static inline uint64_t getTimeSinceBootMs(){
-	return get_now()*1000/(APP_TIMER_CLOCK_FREQ/(APP_TIMER_CONFIG_RTC_FREQUENCY + 1));
-}
+//static inline uint64_t getTimeSinceBootMs(){
+//	return get_now()*1000/(APP_TIMER_CLOCK_FREQ/(APP_TIMER_CONFIG_RTC_FREQUENCY + 1));
+//}
 
 void delayRgbUs(uint32_t us_time, uint8_t R, uint8_t G, uint8_t B){
 //	uint8_t rgb[] = {R, G, B};
