@@ -23,9 +23,14 @@ uint8_t genericLedsSetup[LED_COUNT][3];
 char text[] = "GABRIEL";
 uint8_t textLenght = 7;
 uint8_t r = 255, g = 235,  b = 212;
+float RPM;
+volatile bool zeroedPos = false;
 
 #define TOTAL_MODES 4
 
+static inline uint64_t getTimeSinceBootMs(){
+	return get_now()*1000/(APP_TIMER_CLOCK_FREQ/(APP_TIMER_CONFIG_RTC_FREQUENCY + 1));	//get_now()*1000/(32768/(31+1)) = 0.9765625
+}
 static void log_init(void){
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
     NRF_LOG_DEFAULT_BACKENDS_INIT();
@@ -52,6 +57,37 @@ void draw_image(uint8_t image[][32][3], bool inv){
 	}
 }
 
+static void gpiote_init(){
+    //VCE: This block is a one time configuration
+    if(!nrf_drv_gpiote_is_init()){
+        APP_ERROR_CHECK(nrf_drv_gpiote_init());
+    }
+
+    //VCE: The below block needs to be called for each pin
+    nrf_drv_gpiote_in_config_t in_config_1;
+    in_config_1.pull = NRF_GPIO_PIN_PULLUP; //User defined
+    in_config_1.sense = NRF_GPIOTE_POLARITY_HITOLO; //User defined
+    in_config_1.hi_accuracy = false; //User defined
+    in_config_1.is_watcher = false; //Don't change this
+    in_config_1.skip_gpio_setup = false; //Don't change this
+
+    //VCE: Configuring 
+    APP_ERROR_CHECK(nrf_drv_gpiote_in_init(SENSOR_PIN, &in_config_1, in_pin_handler));
+    nrf_drv_gpiote_in_event_enable(SENSOR_PIN, true);
+}
+void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action){
+	static uint64_t count=0;
+	static uint64_t last=0;
+	count++;
+	zeroedPos = true;
+	
+	if(count%100==0){
+		uint64_t periodMs = getTimeSinceBootMs() - last;
+		last = getTimeSinceBootMs();
+		RPM = (60.0*1000*100)/periodMs;
+	}
+}
+
 /**@brief Function for application main entry.
  */
 int main(void){
@@ -69,10 +105,10 @@ int main(void){
     services_init();
     advertising_init();
     conn_params_init();
-//    calcBatteryLevel(NULL);
-//	
     advertising_start();
-	nrf_gpio_cfg_input(SENSOR_PIN, NRF_GPIO_PIN_PULLUP);
+//    calcBatteryLevel(NULL);
+	
+	gpiote_init();
 	
 	
 	uint8_t rainbow[3][LED_COUNT] = {	
@@ -83,40 +119,37 @@ int main(void){
 	convertTrueRGB(rainbow);
 								
 	#define ALFABET (char*)"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    bool button_latch = false;
 	
     for (;;){
-		if(!nrf_gpio_pin_read(SENSOR_PIN) && !button_latch){
-			mode = (256 - TOTAL_MODES) + (mode - 256 + TOTAL_MODES+ 1) % TOTAL_MODES;
-			button_latch = true;
-		}
-		if(nrf_gpio_pin_read(SENSOR_PIN)) button_latch = false;
-		switch(mode){
-			case 0:
-				writeWordFont(text, textLenght, 16, 1, LED_COUNT-16, false, true, r, g, b);//255, 235, 212
-				break;
-			case 1:
-				printColoredLine(genericLedsSetup, false);
-				break;
-			case 253:
-				draw_image(emojiSunGlass32, false);
-				break;
-			case 254:
-				draw_image(imgSuperMario32, false);
-				break;
-			case 255:
-				draw_image(emojiSunGlass32, true);
-				break;
-		}
-//		coloredLedsTest(rainbow);
-//		writeWordFont(ALFABET, 26, 16, 500, 1, true, false, 255, 235, 212);
-//		writeWordFont(test, sizeof(test)-1, 16, 500, 1, true, false, 255, 235, 212);
-//		writeWordFont(test, 3, 7, 100, 10, true, false, 83, 230, 183);
-//		writeWordFont(&test[3], 4, 7, 100, 7, true, false, 0, 255, 0);
-		
+		while(!zeroedPos);
+		zeroedPos = false;
+//		switch(mode){
+//			case 0:
+				writeWordFont(text, textLenght, 16, 1, LED_COUNT-16, false, false, r, g, b);//255, 235, 212
+//				break;
+//			case 1:
+//				printColoredLine(genericLedsSetup, false);
+//				break;
+//			case 253:
+//				draw_image(emojiSunGlass32, false);
+//				break;
+//			case 254:
+//				draw_image(imgSuperMario32, false);
+//				break;
+//			case 255:
+//				draw_image(emojiSunGlass32, true);
+//				break;
+//		}
+
+////		coloredLedsTest(rainbow);
+////		writeWordFont(ALFABET, 26, 16, 500, 1, true, false, 255, 235, 212);
+////		writeWordFont(test, sizeof(test)-1, 16, 500, 1, true, false, 255, 235, 212);
+////		writeWordFont(test, 3, 7, 100, 10, true, false, 83, 230, 183);
+////		writeWordFont(&test[3], 4, 7, 100, 7, true, false, 0, 255, 0);
+//		
+////		nrf_delay_ms(10);
+////        idle_state_handle();
 //		NRF_LOG_PROCESS();
-//		nrf_delay_ms(10);
-//        idle_state_handle();
     }
 }
 
