@@ -17,6 +17,8 @@ void blinkLed(uint8_t led);
 
 void setLedOff(void * p_context);
 
+void setPwm(uint8_t pin, uint16_t duty);
+
 void set_params_handler   	(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len);
 void mode_handler           (uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, uint8_t mode);
 void set_text_handler   	(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len);

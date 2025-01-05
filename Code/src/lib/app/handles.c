@@ -1,6 +1,7 @@
 #include "handles.h"
 #include "utils.h"
 #include "write_text.h"
+#include "app_pwm.h"
 
 //#include "app_pwm.h"
 
@@ -10,14 +11,24 @@ extern char text[];
 extern uint8_t textLenght;
 extern uint8_t r,g,b;
 
+APP_PWM_INSTANCE(PWM1,1);
+
 void timers_init(void){
     // Initialize timer module, making it use the scheduler
     APP_ERROR_CHECK(app_timer_init());
 }
+void pwm_ready_callback(uint32_t pwm_id){}
+void setPwm(uint8_t pin, uint16_t duty){
+	app_pwm_uninit(&PWM1);
+    app_pwm_config_t pwm1_cfg = APP_PWM_DEFAULT_CONFIG_1CH(100, pin);
+    APP_ERROR_CHECK(app_pwm_init(&PWM1, &pwm1_cfg, pwm_ready_callback));
+    app_pwm_enable(&PWM1);
+	while (app_pwm_channel_duty_set(&PWM1, 0, duty) == NRF_ERROR_BUSY);
+}
 void set_params_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
 	nrf_gpio_cfg_output(MOTOR_PIN);
 	uint16_t RPM = ((params[0]<<8) + params[1]);
-	nrf_gpio_pin_write(MOTOR_PIN, RPM > 0);
+	setPwm(MOTOR_PIN, 100-RPM);
 	NRF_LOG_INFO("RPM: %d", RPM);
     NRF_LOG_FLUSH();
 }
