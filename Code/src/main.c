@@ -17,12 +17,12 @@
 #include "write_text.h"
 #include "images.h"
 
-
 uint8_t mode = 0;
 uint8_t genericLedsSetup[LED_COUNT][3];	
-char text[] = "GABRIEL";
-uint8_t textLenght = 7;
-uint8_t r = 255, g = 235,  b = 212;
+char text[] = "GABRIEL   ";
+uint8_t textLength = 10
+;
+uint8_t r = 255, g = 235,  b = 212;	//true RGB = 255, 235, 212
 float RPM;
 volatile bool zeroedPos = false;
 
@@ -53,7 +53,7 @@ void draw_image(uint8_t image[][32][3], bool inv){
 //		double16array(emojiSunGlass16[col/2], temp, (44-32)/2, whiteBg); 
 		from32toFullSize(image[col], temp, (44-32)/2, whiteBg); 
 		printColoredLine(temp, inv);
-		nrf_delay_us(1200);
+		nrf_delay_us(300);
 	}
 }
 
@@ -95,6 +95,7 @@ int main(void){
     lfclk_config();
     log_init();
     leds_init();
+	gpiote_init();
 	simple_leds_test();
     NRF_LOG_INFO("Start");	NRF_LOG_PROCESS();
     timers_init();		
@@ -107,49 +108,56 @@ int main(void){
     conn_params_init();
     advertising_start();
 //    calcBatteryLevel(NULL);
-	
-	gpiote_init();
-	
-	
-	uint8_t rainbow[3][LED_COUNT] = {	
-		{255, 148,  148, 148,  148, 148,  148, 75,  75,  75,  75,  75,  75,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255},	//RED
-		{255, 0,    0,   0,    0,   0,    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 127, 127, 127, 127, 127, 127, 0,   0,   0,   0,   0,   0,   255},	//GREEN
-		{255, 211,  211, 211,  211, 211,  211, 130, 130, 130, 130, 130, 130, 255, 255, 255, 255, 255, 255, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255}	    //BLUE
-	};
-	convertTrueRGB(rainbow);
-								
-	#define ALFABET (char*)"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	
+	uint8_t a = 0xff;
+	uint64_t leds = a;//0xFFFF;
+	NRF_LOG_INFO("temp: %x", leds);
+	leds = leds>>16;
+	NRF_LOG_INFO("temp: %x", leds);//0xFFFF00
+	leds = leds<<16;
+	NRF_LOG_INFO("temp: %x", leds);//0xFFFF0000
+	leds = ((leds>>(LED_SIGNALS_COUNT*1)) & MASK_ALL_LEDS);
+	NRF_LOG_INFO("leds: %x", MASK_ALL_LEDS);
+	NRF_LOG_INFO("temp: %x", leds);
+    NRF_LOG_FLUSH();
+	uint8_t RGB[3] = {255, 0, 255};
+	leds = 0xAA;
+	leds = leds<<36;
+//    for (;;){
+//		for(int i = 0; i < 255; i+=10){
+//			for(uint8_t color = 0; color < 3; color++){
+//				for(uint8_t m = 0; m < RGB_ROWS; m++){
+//					uint32_t temp = (leds>>(LED_SIGNALS_COUNT*m)) & MASK_ALL_LEDS;
+//					nrf_gpio_port_out_clear(NRF_P0, MASK_LEDS_AND_RGB);
+//					if(temp){
+//						nrf_gpio_pin_write(RGB_PINS[m][color], 1);
+//						if(i < RGB[color])	nrf_gpio_port_out_set(NRF_P0, temp);
+//						else 	nrf_gpio_port_out_clear(NRF_P0, MASK_LEDS_AND_RGB);
+//					}
+//					nrf_delay_us(1);
+//				}
+//			}
+//		}
+//	}
     for (;;){
 		while(!zeroedPos);
 		zeroedPos = false;
-//		switch(mode){
-//			case 0:
-				writeWordFont(text, textLenght, 16, 1, LED_COUNT-16, false, false, r, g, b);//255, 235, 212
-//				break;
+		switch(mode){
+			case 0:
+				writeWordFont(text, textLength, FONT14, 100, LED_COUNT-FONT14, false, false, r, g, b);//255, 235, 212
+				break;
 //			case 1:
 //				printColoredLine(genericLedsSetup, false);
 //				break;
-//			case 253:
-//				draw_image(emojiSunGlass32, false);
-//				break;
+			case 2:
+				draw_image(emojiSunGlass32, false);
+				break;
 //			case 254:
 //				draw_image(imgSuperMario32, false);
 //				break;
 //			case 255:
 //				draw_image(emojiSunGlass32, true);
 //				break;
-//		}
-
-////		coloredLedsTest(rainbow);
-////		writeWordFont(ALFABET, 26, 16, 500, 1, true, false, 255, 235, 212);
-////		writeWordFont(test, sizeof(test)-1, 16, 500, 1, true, false, 255, 235, 212);
-////		writeWordFont(test, 3, 7, 100, 10, true, false, 83, 230, 183);
-////		writeWordFont(&test[3], 4, 7, 100, 7, true, false, 0, 255, 0);
-//		
-////		nrf_delay_ms(10);
-////        idle_state_handle();
-//		NRF_LOG_PROCESS();
+		}
     }
 }
 

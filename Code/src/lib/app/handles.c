@@ -8,7 +8,7 @@
 extern uint8_t mode;
 extern uint8_t genericLedsSetup[LED_COUNT][3];
 extern char text[];
-extern uint8_t textLenght;
+extern uint8_t textLength;
 extern uint8_t r,g,b;
 
 APP_PWM_INSTANCE(PWM1,1);
@@ -42,8 +42,8 @@ void set_text_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_
 	r = params[0];
 	g = params[1];
 	b = params[2];
-	textLenght = len-3;
-	memcpy(text, &params[3], textLenght);
+	textLength = len-3;
+	memcpy(text, &params[3], textLength);
 }
 
 void set_leds_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){

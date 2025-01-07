@@ -6,18 +6,20 @@ function convertToBinNotationArray(uint16Data){
 	ret+="},"
     return ret;
 }
-function convertToHexNotationArray(uint16Data){
+function convertToHexNotationArray(intData, intSize){
     let ret = "{";
-    for(let val of uint16Data){ 
-        ret += ("0x"+("0000"+val.toString(16)).substr(-4))+", ";
+    let nibbles = "";
+    for(let i=0; i<(intSize/4); i++) nibbles += "0";
+    for(let val of intData){ 
+        ret += ("0x"+(nibbles + val.toString(16)).substr(-intSize/4))+", ";
     }
     ret = ret.substring(0, ret.length-2) + "},";
     return ret;
 }
-function uint16ArrayToHexNotationArrays(uint16Arrays){
+function intArrayToHexNotationArrays(intArrays, intSize){
     let ret = "{\n";
-    for(let val of uint16Arrays){
-		ret += convertToHexNotationArray(val)+"\n";
+    for(let val of intArrays){
+		ret += convertToHexNotationArray(val, intSize)+"\n";
 	}
 	ret += "}";
 	return ret;
@@ -29,4 +31,11 @@ function uint8ToHexNotationArray(uint8Data){
     }
     ret = ret.substring(0, ret.length-2) + "},";
     console.log(ret);
+}
+function intTransposeArrays(intArrays, intSize){
+    let ret = [];
+    for(let i=0; i<intArrays.length; i++){
+        ret[i] = intTranspose(intArrays[i], intSize);
+    }
+    return ret;
 }

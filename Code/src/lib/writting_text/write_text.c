@@ -15,28 +15,35 @@ void delayRgbUs(uint32_t us_time, uint8_t R, uint8_t G, uint8_t B){
 //		}
 //	}
 }
+//__RBIT
 void writeFont(char character, uint8_t font, uint32_t pixelLengthUs, uint8_t offset, bool flip, bool ccw, uint8_t R, uint8_t G, uint8_t B) {
+	uint8_t RGB[3] = {R, G, B};
+	if(offset + font > LED_COUNT) offset = LED_COUNT - font;
 	for (int col = 0; col < font; col++) {
-		uint8_t temp[LED_COUNT][3];
-		memset(temp, 0, LED_COUNT*3);
-		for (uint8_t row = 0; row < font; row++){
-			if(font==7 && ((char7[(int)character - 64][flip?(6 - row):row]>>(ccw?col:(6-col))) & 1)) {
-				temp[row + offset][0] = R;
-				temp[row + offset][1] = G;
-				temp[row + offset][2] = B;
-			}
-			if(font==16 && ((char16[(int)character - 64][flip?(15 - row):row]>>(ccw?col:(15-col))) & 1)){
-				temp[row + offset][0] = R;
-				temp[row + offset][1] = G;
-				temp[row + offset][2] = B;
-			}
+		uint64_t leds = 0;
+		if(font==FONT7)			leds = char7[(int)character - 64][ccw?col:(font - col - 1)]>>1;
+		else if(font==FONT14)	leds = char14[(int)character - 64][ccw?col:(font - col - 1)]>>1;
+		if(flip){
+			leds = __rbit(leds)>>(32-font);
 		}
-		printColoredLine(temp, false);
 		
-		nrf_delay_us(pixelLengthUs);
-//		delayRgbUs(pixelLengthUs, R, G, B);
-//		for (uint8_t row = 0; row < font; row++)	nrf_gpio_pin_write(LED_PIN[row + offset], 0);
-//		delayRgbUs(pixelLengthUs/2, R, G, B);
+		leds = leds<<offset;
+		
+		for(uint8_t i = 0; i < (pixelLengthUs/(25*3*RGB_ROWS)) + 1; i++)
+			for(int i = 0; i < 255; i+=10){
+				for(uint8_t color = 0; color < 3; color++){
+					for(uint8_t m = 0; m < RGB_ROWS; m++){
+						uint32_t temp = (leds>>(LED_SIGNALS_COUNT*m)) & MASK_ALL_LEDS;
+						nrf_gpio_port_out_clear(NRF_P0, MASK_LEDS_AND_RGB);
+						if(temp){
+							nrf_gpio_pin_write(RGB_PINS[m][color], 1);
+							if(i < RGB[color])	nrf_gpio_port_out_set(NRF_P0, temp);
+							else 	nrf_gpio_port_out_clear(NRF_P0, MASK_LEDS_AND_RGB);
+						}
+					}
+				}
+			}
+		//nrf_delay_us(pixelLengthUs/3);
 	}
 	
 	
@@ -44,8 +51,8 @@ void writeFont(char character, uint8_t font, uint32_t pixelLengthUs, uint8_t off
 void writeWordFont(char* word, uint8_t wordLen, uint8_t font, uint32_t pixelLengthUs, uint8_t offset, bool flip, bool ccw, uint8_t R, uint8_t G, uint8_t B){
 	for(int i = 0; i < wordLen; i++){
 		char toWrite = word[ccw?(wordLen-1-i) : i];
-		if(toWrite == 32)	writeFont(64, font, pixelLengthUs, offset, !flip, ccw, R, G, B);
-		else	writeFont(toWrite, font, pixelLengthUs, offset, !flip, ccw, R, G, B);
+		if(toWrite == 32)	writeFont(64, font, pixelLengthUs, offset, flip, ccw, R, G, B);
+		else	writeFont(toWrite, font, pixelLengthUs, offset, flip, ccw, R, G, B);
 	}
 }
 
