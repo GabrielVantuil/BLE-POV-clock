@@ -139,16 +139,17 @@ int main(void){
 //		}
 //	}
     for (;;){
-		while(!zeroedPos);
-		zeroedPos = false;
 		switch(mode){
 			case 0:
+				while(!zeroedPos);	
+				zeroedPos = false;
 				writeWordFont(text, textLength, FONT14, 100, LED_COUNT-FONT14, false, false, r, g, b);//255, 235, 212
 				break;
-//			case 1:
-//				printColoredLine(genericLedsSetup, false);
-//				break;
+			case 1:
 			case 2:
+				printColoredLine(genericLedsSetup, false);
+				break;
+			case 3:
 				draw_image(emojiSunGlass32, false);
 				break;
 //			case 254:
