@@ -11,6 +11,7 @@ extern uint8_t genericLedsSetup[LED_COUNT][3];
 extern char text[];
 extern uint8_t textLength;
 extern uint8_t r,g,b;
+extern uint8_t sync;
 
 APP_PWM_INSTANCE(PWM1,1);
 
@@ -30,11 +31,12 @@ void set_params_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_displa
 	nrf_gpio_cfg_output(MOTOR_PIN);
 	uint16_t RPM = ((params[0]<<8) + params[1]);
 	setPwm(MOTOR_PIN, 100-RPM);
+	sync = params[2];
+    NRF_LOG_INFO("S %d", sync);	NRF_LOG_PROCESS();
 }
 
 void mode_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, uint8_t m){
 	mode = m;
-	zeroedPos = true;
 }
 
 void set_text_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
@@ -48,7 +50,6 @@ void set_text_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_
 
 void set_leds_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
 	mode = 1;
-	zeroedPos = true;
 	if((len/3) > LED_COUNT) len = LED_COUNT*3;
 	for(uint8_t i = 0; i < LED_COUNT; i++){
 		genericLedsSetup[i][0] = 0;	

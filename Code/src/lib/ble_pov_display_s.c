@@ -79,10 +79,10 @@ uint32_t ble_pov_display_s_init(ble_pov_display_s_t * p_pov_display_s, const ble
 
     err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &p_pov_display_s->service_handle);
     VERIFY_SUCCESS(err_code); 
-    err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_SET_PARAMS_CHAR     , 2, 1, &p_pov_display_s->set_params_handles);
+    err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_SET_PARAMS_CHAR     , 10, 1, &p_pov_display_s->set_params_handles);
     if (err_code != NRF_SUCCESS)	return err_code;
 
-    err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_GET_INFO_CHAR       , 1, 0, &p_pov_display_s->get_info_handles);
+    err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_GET_INFO_CHAR       , 10, 0, &p_pov_display_s->get_info_handles);
     if (err_code != NRF_SUCCESS)	return err_code;
 		
     err_code = configAndAddChar(p_pov_display_s, POV_DISPLAY_S_UUID_MODE_CHAR           , 1, 1, &p_pov_display_s->mode_handles);

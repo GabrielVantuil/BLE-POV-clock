@@ -20,11 +20,11 @@
 uint8_t mode = 0;
 uint8_t genericLedsSetup[LED_COUNT][3];	
 char text[] = "GABRIEL   ";
-uint8_t textLength = 10
-;
+uint8_t textLength = 10;
 uint8_t r = 255, g = 235,  b = 212;	//true RGB = 255, 235, 212
 float RPM;
 volatile bool zeroedPos = false;
+volatile uint8_t sync = 255;
 
 #define TOTAL_MODES 4
 
@@ -81,10 +81,10 @@ void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action){
 	count++;
 	zeroedPos = true;
 	
-	if(count%100==0){
+	if(count%10==0){
 		uint64_t periodMs = getTimeSinceBootMs() - last;
 		last = getTimeSinceBootMs();
-		RPM = (60.0*1000*100)/periodMs;
+		RPM = (60.0*1000*10)/periodMs;
 	}
 }
 
@@ -108,41 +108,16 @@ int main(void){
     conn_params_init();
     advertising_start();
 //    calcBatteryLevel(NULL);
-	uint8_t a = 0xff;
-	uint64_t leds = a;//0xFFFF;
-	NRF_LOG_INFO("temp: %x", leds);
-	leds = leds>>16;
-	NRF_LOG_INFO("temp: %x", leds);//0xFFFF00
-	leds = leds<<16;
-	NRF_LOG_INFO("temp: %x", leds);//0xFFFF0000
-	leds = ((leds>>(LED_SIGNALS_COUNT*1)) & MASK_ALL_LEDS);
-	NRF_LOG_INFO("leds: %x", MASK_ALL_LEDS);
-	NRF_LOG_INFO("temp: %x", leds);
-    NRF_LOG_FLUSH();
-	uint8_t RGB[3] = {255, 0, 255};
-	leds = 0xAA;
-	leds = leds<<36;
-//    for (;;){
-//		for(int i = 0; i < 255; i+=10){
-//			for(uint8_t color = 0; color < 3; color++){
-//				for(uint8_t m = 0; m < RGB_ROWS; m++){
-//					uint32_t temp = (leds>>(LED_SIGNALS_COUNT*m)) & MASK_ALL_LEDS;
-//					nrf_gpio_port_out_clear(NRF_P0, MASK_LEDS_AND_RGB);
-//					if(temp){
-//						nrf_gpio_pin_write(RGB_PINS[m][color], 1);
-//						if(i < RGB[color])	nrf_gpio_port_out_set(NRF_P0, temp);
-//						else 	nrf_gpio_port_out_clear(NRF_P0, MASK_LEDS_AND_RGB);
-//					}
-//					nrf_delay_us(1);
-//				}
-//			}
-//		}
-//	}
+	
     for (;;){
+		while(!zeroedPos && (sync != 0xFF)){}
+		zeroedPos = false;
+		if(sync != 0xFF){
+			uint32_t periodUs = (60.0*1000*1000)/RPM;
+			nrf_delay_us(periodUs*sync/255);
+		}
 		switch(mode){
 			case 0:
-				while(!zeroedPos);	
-				zeroedPos = false;
 				writeWordFont(text, textLength, FONT14, 100, LED_COUNT-FONT14, false, false, r, g, b);//255, 235, 212
 				break;
 			case 1:
