@@ -7,7 +7,7 @@
 
 extern uint8_t mode;
 extern bool zeroedPos;
-extern uint8_t genericLedsSetup[LED_COUNT][3];
+extern uint8_t genericLeds[LED_COUNT][3];
 extern char text[];
 extern uint8_t textLength;
 extern uint8_t r,g,b;
@@ -52,14 +52,28 @@ void set_leds_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_
 	mode = 1;
 	if((len/3) > LED_COUNT) len = LED_COUNT*3;
 	for(uint8_t i = 0; i < LED_COUNT; i++){
-		genericLedsSetup[i][0] = 0;	
-		genericLedsSetup[i][1] = 0;	
-		genericLedsSetup[i][2] = 0;
+		genericLeds[i][0] = 0;	
+		genericLeds[i][1] = 0;	
+		genericLeds[i][2] = 0;
 	}
-	for(uint8_t i = 0; i < (len/3); i++){
-		genericLedsSetup[i][0] = params[i*3+0];
-		genericLedsSetup[i][1] = params[i*3+1];
-		genericLedsSetup[i][2] = params[i*3+2];
+	if(len == 3){ //all leds
+		for(uint8_t i = 0; i < LED_COUNT; i++){
+			genericLeds[i][0] = params[0];	
+			genericLeds[i][1] = params[1];	
+			genericLeds[i][2] = params[2];
+		}
+	}
+	else if(len == 4){	//single led
+		genericLeds[params[3]][0] = params[0];	
+		genericLeds[params[3]][1] = params[1];	
+		genericLeds[params[3]][2] = params[2];
+	}
+	else{
+		for(uint8_t i = 0; i < (len/3); i++){
+			genericLeds[i][0] = params[i*3+0];
+			genericLeds[i][1] = params[i*3+1];
+			genericLeds[i][2] = params[i*3+2];
+		}
 	}
 }
 void connectionTimeout(void * p_context){

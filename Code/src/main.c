@@ -18,7 +18,7 @@
 #include "images.h"
 
 uint8_t mode = 0;
-uint8_t genericLedsSetup[LED_COUNT][3];	
+uint8_t genericLeds[LED_COUNT][3];	
 char text[] = "GABRIEL   ";
 uint8_t textLength = 10;
 uint8_t r = 255, g = 235,  b = 212;	//true RGB = 255, 235, 212
@@ -122,7 +122,7 @@ int main(void){
 				break;
 			case 1:
 			case 2:
-				printColoredLine(genericLedsSetup, false);
+				printColoredLine(genericLeds, false);
 				break;
 			case 3:
 				draw_image(emojiSunGlass32, false);
