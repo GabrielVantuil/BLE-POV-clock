@@ -17,9 +17,10 @@
 #include "write_text.h"
 #include "images.h"
 
+#define TEXT_SIZE 15
 uint8_t mode = 0;
 uint8_t genericLeds[LED_COUNT][3];	
-char text[] = "GABRIEL   ";
+char text[TEXT_SIZE] = "GABRIEL   ";
 uint8_t textLength = 10;
 uint8_t r = 255, g = 235,  b = 212;	//true RGB = 255, 235, 212
 float RPM;
@@ -34,27 +35,6 @@ static inline uint64_t getTimeSinceBootMs(){
 static void log_init(void){
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
     NRF_LOG_DEFAULT_BACKENDS_INIT();
-}
-
-static void lfclk_config(void){
-	// initialize the low power low frequency clock
-  APP_ERROR_CHECK(nrf_drv_clock_init());
-
-	// request the lf clock to not to generate any events on ticks
-	// One tick =  1 value increment in the counter register
-  nrf_drv_clock_lfclk_request(NULL);
-}
-
-void draw_image(uint8_t image[][32][3], bool inv){
-	uint8_t whiteBg[3] = {255, 235, 212};
-	for(uint8_t col = 0; col < 32; col++){
-		uint8_t temp[LED_COUNT][3];
-//		from16toFullSize(smileSunGlass[col], temp, 44-16); 
-//		double16array(emojiSunGlass16[col/2], temp, (44-32)/2, whiteBg); 
-		from32toFullSize(image[col], temp, (44-32)/2, whiteBg); 
-		printColoredLine(temp, inv);
-		nrf_delay_us(300);
-	}
 }
 
 static void gpiote_init(){
@@ -88,11 +68,7 @@ void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action){
 	}
 }
 
-/**@brief Function for application main entry.
- */
 int main(void){
-    // Initialize.
-    lfclk_config();
     log_init();
     leds_init();
 	gpiote_init();
@@ -136,8 +112,3 @@ int main(void){
 		}
     }
 }
-
-
-/**
- * @}
- */
