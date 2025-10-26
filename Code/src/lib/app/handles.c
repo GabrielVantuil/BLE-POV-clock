@@ -20,7 +20,7 @@ void timers_init(void){
 void pwm_ready_callback(uint32_t pwm_id){}
 void setPwm(uint8_t pin, uint16_t duty){
 	app_pwm_uninit(&PWM1);
-    app_pwm_config_t pwm1_cfg = APP_PWM_DEFAULT_CONFIG_1CH(100, pin);
+    app_pwm_config_t pwm1_cfg = APP_PWM_DEFAULT_CONFIG_1CH(1000, pin);
     APP_ERROR_CHECK(app_pwm_init(&PWM1, &pwm1_cfg, pwm_ready_callback));
     app_pwm_enable(&PWM1);
 	while (app_pwm_channel_duty_set(&PWM1, 0, duty) == NRF_ERROR_BUSY);
@@ -28,7 +28,7 @@ void setPwm(uint8_t pin, uint16_t duty){
 void set_params_handler(uint16_t conn_handle, ble_pov_display_s_t * p_pov_display_s, const uint8_t *params, uint8_t len){
 	nrf_gpio_cfg_output(MOTOR_PIN);
 	uint16_t RPM = ((params[0]<<8) + params[1]);
-	setPwm(MOTOR_PIN, 100-RPM);
+	setPwm(MOTOR_PIN, RPM);
 	sync = params[2];
     NRF_LOG_INFO("S %d", sync);	NRF_LOG_PROCESS();
 }

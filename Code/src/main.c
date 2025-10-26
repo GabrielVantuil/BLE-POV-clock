@@ -88,6 +88,7 @@ int main(void){
     for (;;){
 		while(!zeroedPos && (sync != 0xFF)){}
 		zeroedPos = false;
+			
 		if(sync != 0xFF){
 			uint32_t periodUs = (60.0*1000*1000)/RPM;
 			nrf_delay_us(periodUs*sync/255);
